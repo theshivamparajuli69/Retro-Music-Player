@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Music Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="app-title">Retro</div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-view="home">Home</button>
+                <button class="nav-tab" data-view="now-playing">Now Playing</button>
+                <button class="nav-tab" data-view="settings">Settings</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Home View -->
+            <div class="view active" id="home">
+                <div class="library-header" style="padding: 20px 20px 0;">
+                    <div class="library-title">Home</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="add-btn" id="edit-songs-btn" title="Select Songs" style="display: none;">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                        </button>
+                        <button class="add-btn" id="home-add-song-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <input type="file" id="home-file-input" accept="audio/*" style="display: none;">
+                </div>
+                
+                <!-- Selection Header -->
+                <div class="selection-header" id="selection-header">
+                    <div style="font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: var(--cyan-dark);">
+                        <span id="selected-count">0</span> selected
+                    </div>
+                    <div class="selection-actions">
+                        <button class="selection-btn cancel" id="cancel-selection-btn">Cancel</button>
+                        <button class="selection-btn" id="select-all-btn">Select All</button>
+                        <button class="selection-btn delete" id="delete-selected-btn">Delete</button>
+                    </div>
+                </div>
+
+                <div class="home-categories">
+                    <button class="category-tab active" data-category="songs">Songs</button>
+                    <button class="category-tab" data-category="albums">Albums</button>
+                    <button class="category-tab" data-category="playlists">Playlists</button>
+                </div>
+
+                <!-- Songs Category -->
+                <div class="category-content active library-view" id="songs-content">
+                    <div class="song-list" id="home-song-list" style="padding: 0 20px 20px; max-height: 500px; overflow-y: auto;">
+                        <div class="empty-state" id="home-empty-state">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                            </svg>
+                            <div class="empty-state-text">
+                                No songs yet.<br>
+                                Import songs from Library to get started!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Albums Category -->
+                <div class="category-content library-view" id="albums-content">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
+                        </svg>
+                        <div class="empty-state-text">
+                            No albums yet.<br>
+                            Albums feature coming soon!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Playlists Category -->
+                <div class="category-content library-view" id="playlists-content">
+                    <div id="playlists-main-view" style="padding: 0 20px 20px;">
+                        <button class="create-playlist-btn" id="create-playlist-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Create New Playlist
+                        </button>
+                        <div class="playlist-list" id="playlist-list" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                    
+                    <!-- Playlist Detail View -->
+                    <div id="playlist-detail-view" style="display: none;">
+                            <div class="library-header">
+                                <button class="add-btn" id="back-to-playlists-btn" style="background: var(--cyan-bright);">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                                    </svg>
+                                </button>
+                                <div class="library-title" id="playlist-detail-title">Playlist</div>
+                                <div style="margin-left: auto; display:flex; gap:8px; align-items:center;">
+                                    <button class="add-btn" id="add-songs-to-playlist-btn" title="Add Songs">
+                                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                                    </button>
+                                    <button class="add-btn" id="delete-playlist-btn" title="Delete Playlist" style="background: #d90429;">
+                                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        <div class="song-list" id="playlist-songs-list" style="padding: 0 20px 20px; max-height: 450px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modals -->
+            <div class="modal-overlay" id="create-playlist-modal">
+                <div class="modal">
+                    <div class="modal-title">Create Playlist</div>
+                    <input type="text" class="modal-input" id="playlist-name-input" placeholder="Playlist name">
+                    <div class="modal-title" style="font-size: 14px; margin-top: 16px;">Select Songs</div>
+                    <div class="song-selection-list" id="song-selection-list"></div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn secondary" id="cancel-playlist-btn">Cancel</button>
+                        <button class="modal-btn primary" id="save-playlist-btn">Create</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Now Playing View -->
+            <div class="view now-playing" id="now-playing">
+                <div class="album-container">
+                    <div class="album-frame">
+                        <div class="album-cover paused" id="album-cover-display" style="cursor: pointer;" title="Click to change album cover">
+                            <div class="vinyl-record"></div>
+                        </div>
+                    </div>
+                    <input type="file" id="album-cover-input" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="song-info">
+                    <div class="song-title">No Song Playing</div>
+                    <div class="song-artist">Import songs to get started</div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-time">
+                        <span>0:00</span>
+                        <span>0:00</span>
+                    </div>
+                </div>
+
+                <div class="cassette-player paused">
+                    <div class="cassette-top">
+                        <div class="reels">
+                            <div class="reel"></div>
+                            <div class="reel"></div>
+                        </div>
+                        <div class="tape-window"></div>
+                    </div>
+
+                    <div class="control-buttons">
+                        <button class="control-btn" id="prev-btn" title="Previous">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                            </svg>
+                        </button>
+                        <button class="control-btn" id="rewind-btn" title="Rewind">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18V6l-8.5 6zm.5-6l8.5 6V6z"/>
+                            </svg>
+                        </button>
+                        <button class="control-btn play-pause" id="play-pause-btn" title="Play/Pause">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </button>
+                        <button class="control-btn" id="forward-btn" title="Fast Forward">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 18l8.5-6L4 6zm9.5-6l8.5 6V6z"/>
+                            </svg>
+                        </button>
+                        <button class="control-btn" id="next-btn" title="Next">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6 18l8.5-6L6 6zm10-12v12h2V6z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="secondary-controls">
+                        <button class="secondary-btn" id="loop-btn" title="Loop">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                            </svg>
+                        </button>
+                        <button class="secondary-btn" id="shuffle-btn" title="Shuffle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+                            </svg>
+                        </button>
+                        <button class="secondary-btn" id="favorite-btn" title="Favorite">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="volume-control">
+                        <svg class="volume-icon" viewBox="0 0 24 24">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        </svg>
+                        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70">
+                        <div class="volume-level" id="volume-level">70%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="view settings-view" id="settings">
+                <div class="settings-section">
+                    <h2 class="settings-title">Appearance</h2>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Dark Mode</div>
+                            <div class="setting-description">Switch between light and dark theme</div>
+                        </div>
+                        <div class="toggle-switch" id="dark-mode-toggle">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-title">About</h2>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Retro Music Player</div>
+                            <div class="setting-description">Version 1.0.0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
